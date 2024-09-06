@@ -1,0 +1,12 @@
+.pattern-background{
+    background-image: url('../assets/Pattern.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  
+  .Rectangle {
+    width: 114px;
+    height: 162px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px 0 rgba(211, 209, 238, 0.5);
+   }

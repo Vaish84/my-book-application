@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Next from '../assets/Next.svg';
+import "../style/BookCard.css"
 
 const categories = [
   {
@@ -65,7 +66,7 @@ const CategoryList: React.FC = () => {
           <button
             key={category.id}
             onClick={() => handleCategoryClick(category.name)}
-            className="w-full flex justify-between items-center p-2 my-1 bg-white rounded-lg shadow-md hover:bg-gray-200"
+            className="w-full flex justify-between items-center px-2 h-12 my-1 bg-white rounded-md shadow-md hover:bg-gray-200"
           >
             <div className="flex items-center">
               <img src={category.icon} alt={category.name} className="w-6 h-6 mr-4" />

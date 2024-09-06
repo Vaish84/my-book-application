@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SearchIcon from '../assets/Search.svg'
+import BookCard from './BookCard';
 interface Book {
     id: number;
     title: string;
@@ -18,25 +19,41 @@ const BookList: React.FC<BookListProps> = ({ category }) => {
 
     useEffect(() => {
         fetchBooks();
-    }, [category, query, page]);
+    }, [category, query]);
 
-    const fetchBooks = async () => {
-        debugger
+    useEffect(() => {
+        fetchBooks(true);
+    }, [page]);
+
+    const hasCoverImage = (formats: any) => {
+        return formats['image/jpeg'] || formats['image/png'];
+    };
+
+    const fetchBooks = async (pageChanged: boolean = false) => {
         const response = await fetch(`http://skunkworks.ignitesol.com:8000/books?topic=${category}&search=${query}&page=${page}`);
         const data = await response.json();
-        debugger
-        setBooks([...data.results]);
+        const booksWithCovers = data.results.filter((book: Book) =>
+            hasCoverImage(book.formats)
+        );
+          
+        if (pageChanged) {
+              
+            setBooks((books) => [...books, ...booksWithCovers]);
+        } else {
+              
+            setBooks(booksWithCovers);  // Clear books if no results
+        }
     };
 
     const handleSearchChange = (e: any) => {
-        debugger
         setQuery(e.target.value);
         setBooks([]);
         setPage(1);
     };
 
+    //Function to handle infinite scrolling
     const handleScroll = () => {
-        if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) return;
+        if (window.innerHeight + document.documentElement.scrollTop + 1 < document.documentElement.offsetHeight) return;
         setPage(prevPage => prevPage + 1);
     };
 
@@ -60,7 +77,7 @@ const BookList: React.FC<BookListProps> = ({ category }) => {
                 <img src={SearchIcon} alt="Search Icon" className="w-5 h-5 text-gray-500 absolute left-4" />
                 <input
                     id="input"
-                    className="w-full pl-12 py-2 bg-[#F0F0F6] border border-gray-300 rounded-md focus:outline-none focus:border-[#5E56E7]"
+                    className="w-full pl-12 py-2 h-12 bg-[#F0F0F6] border border-gray-300 rounded-md focus:outline-none focus:border-[#5E56E7]"
                     type="search"
                     autoComplete="off"
                     spellCheck="false"
@@ -69,20 +86,18 @@ const BookList: React.FC<BookListProps> = ({ category }) => {
                     onChange={handleSearchChange} />
             </div>
             <div className='bg-[#f0f0f6]'>
-                <ul className="pl-4 grid grid-cols-3 gap-8 sm:grid-cols-6 p-8 md:w-9/12 m-auto ">
-
+                {books.length ? <ul className="pl-4 grid grid-cols-3 gap-8 sm:grid-cols-6 p-8 md:w-9/12 m-auto ">
                     {books.map((book) => (
                         <li key={book.id} onClick={() => handleBookClick(book)} className="cursor-pointer hover:underlineflex flex-col items-center ">
-                            <img src={book.formats['image/jpeg'] || 'fallback-image-url.jpg'}
-                                alt={`${book.title} cover`}
-                                className="rounded-lg shadow-lg" />
-                            <div className='mt-2'>
-                                <p className=" text-[20px] text-sm font-semibold line-clamp-3">{book.title}</p>
-                                <p className="text-xs text-gray-500 line-clamp-2">{book.authors.map((author) => author.name).join(', ')}</p>
-                            </div>
+                            <BookCard card={book} />
                         </li>
                     ))}
-                </ul>
+                </ul> : <>
+                    <p className="p-4 text-center mt-4">
+                        No books found. Please try a different search !!!
+                    </p>
+                </>
+                }
 
             </div>
 

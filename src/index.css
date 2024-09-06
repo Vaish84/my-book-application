@@ -44,8 +44,3 @@ code {
     monospace;
 }
 
-.pattern-background{
-  background-image: url('assets/Pattern.svg');
-  background-repeat: no-repeat;
-  background-size: cover;
-}
